@@ -492,7 +492,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 
 		/* Disabling the XHC device */
 		Scope (XHC) { Name (_STA, Zero) }
-		/* Adding a new XHC1 device (USB 3.0) */
+		/* Adding a new XHC1 device (Intel 7 Series USB 3.0) */
 		Device (XHC1)
 		{
 			Name (_ADR, 0x00140000)
