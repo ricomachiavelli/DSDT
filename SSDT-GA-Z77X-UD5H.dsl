@@ -157,8 +157,8 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 
 		/* Disabling the GLAN device */
 		Scope (GLAN) { Name (_STA, Zero) }
-		/* Adding a new ETH0 device */
-		Device (ETH0)
+		/* Adding a new ETH1 device */
+		Device (ETH1)
 		{
 			Name (_ADR, 0x00190000)
 			Method (_DSM, 4)
@@ -168,7 +168,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 				Return (Package()
 				{
 					"device_type", Buffer() { "Ethernet Controller" },
-					"location", Buffer() { "1" }
+					"location", Buffer() { "2" }
 				})
 			}
 		}
@@ -223,8 +223,8 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 		{
 			/* Disabling the PXSX device */
 			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new ETH1 device */
-			Device (ETH1)
+			/* Adding a new ETH0 device */
+			Device (ETH0)
 			{
 				Name (_ADR, Zero)
 				Method (_DSM, 4)
@@ -234,7 +234,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 					Return (Package()
 					{
 						"device_type", Buffer() { "Ethernet Controller" },
-						"location", Buffer() { "2" }
+						"location", Buffer() { "1" }
 					})
 				}
 			}
