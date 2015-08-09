@@ -487,7 +487,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 		Scope (USB6) { Name (_STA, Zero) }
 		Scope (USB7) { Name (_STA, Zero) }
 
-		/* Disabling the WMI1 devices */
+		/* Disabling the WMI1 device */
 		Scope (WMI1) { Name (_STA, Zero) }
 
 		/* Disabling the XHC device */
