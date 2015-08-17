@@ -23,6 +23,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
 	External (_SB.PCI0.RP07, DeviceObj)
+	External (_SB.PCI0.RP08, DeviceObj)
 	External (_SB.PCI0.SAT0, DeviceObj)
 	External (_SB.PCI0.SAT1, DeviceObj)
 	External (_SB.PCI0.USB1, DeviceObj)
@@ -46,6 +47,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 	External (_SB.PCI0.RP05.PXSX, DeviceObj)
 	External (_SB.PCI0.RP06.PXSX, DeviceObj)
 	External (_SB.PCI0.RP07.PXSX, DeviceObj)
+	External (_SB.PCI0.RP08.PXSX, DeviceObj)
 	External (_SB.PCI0.TPMX._STA, IntObj)
 
 	External (_SB.PCI0.LPCB.CWDT._STA, IntObj)
@@ -306,6 +308,14 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 				Notify (\_SB.PCI0.RP06.FWBR.FRWR, 0x02)
 				Notify (\_SB.PWRB, 0x02)
 			}
+		}
+
+		Scope (RP08)
+		{
+			/* Disabling the PXSX device */
+			Scope (PXSX) { Name (_STA, Zero) }
+			/* Adding a new SATA device */
+			Device (SATA) { Name (_ADR, Zero) }
 		}
 
 		Scope (PEG0)

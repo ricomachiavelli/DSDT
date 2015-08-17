@@ -20,10 +20,12 @@ DefinitionBlock ("SSDT-GA-Z77X-UP7.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
 	External (_SB.PCI0.PEG2, DeviceObj)
+	External (_SB.PCI0.RP02, DeviceObj)
 	External (_SB.PCI0.RP04, DeviceObj)
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
 	External (_SB.PCI0.RP07, DeviceObj)
+	External (_SB.PCI0.RP08, DeviceObj)
 	External (_SB.PCI0.SAT0, DeviceObj)
 	External (_SB.PCI0.SAT1, DeviceObj)
 	External (_SB.PCI0.USB1, DeviceObj)
@@ -38,16 +40,17 @@ DefinitionBlock ("SSDT-GA-Z77X-UP7.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 
 	External (_SB.PCI0.LPCB.COPR, DeviceObj)
 	External (_SB.PCI0.LPCB.RMSC, DeviceObj)
-	External (_SB.PCI0.LPCB.SIO1, DeviceObj)
 	External (_SB.PCI0.PEG0.PEGP, DeviceObj)
 	External (_SB.PCI0.PEG2.MVL3, DeviceObj)
 	External (_SB.PCI0.PEG2.MVL4, DeviceObj)
+	External (_SB.PCI0.RP02.PXSX, DeviceObj)
 	External (_SB.PCI0.RP04.PXSX, DeviceObj)
 	External (_SB.PCI0.RP05.MVL1, DeviceObj)
 	External (_SB.PCI0.RP05.MVL2, DeviceObj)
 	External (_SB.PCI0.RP05.PXSX, DeviceObj)
 	External (_SB.PCI0.RP06.PXSX, DeviceObj)
 	External (_SB.PCI0.RP07.PXSX, DeviceObj)
+	External (_SB.PCI0.RP08.PXSX, DeviceObj)
 	External (_SB.PCI0.TPMX._STA, IntObj)
 
 	External (_SB.PCI0.LPCB.CWDT._STA, IntObj)
@@ -178,6 +181,14 @@ DefinitionBlock ("SSDT-GA-Z77X-UP7.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 			}
 		}
 
+		Scope (RP02)
+		{
+			/* Disabling the PXSX device */
+			Scope (PXSX) { Name (_STA, Zero) }
+			/* Adding a new SATA device */
+			Device (SATA) { Name (_ADR, Zero) }
+		}
+
 		Scope (RP04)
 		{
 			/* Disabling the PXSX device */
@@ -260,6 +271,14 @@ DefinitionBlock ("SSDT-GA-Z77X-UP7.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 					})
 				}
 			}
+		}
+
+		Scope (RP08)
+		{
+			/* Disabling the PXSX device */
+			Scope (PXSX) { Name (_STA, Zero) }
+			/* Adding a new SATA device */
+			Device (SATA) { Name (_ADR, Zero) }
 		}
 
 		Scope (PEG0)
@@ -470,8 +489,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UP7.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 			Scope (COPR) { Name (_STA, Zero) }
 			/* Disabling the RMSC device */
 			Scope (RMSC) { Name (_STA, Zero) }
-			/* Disabling the SIO1 device */
-			Scope (SIO1) { Name (_STA, Zero) }
 			/* Adding a new MATH device */
 			Device (MATH)
 			{
