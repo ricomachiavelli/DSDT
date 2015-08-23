@@ -1,7 +1,6 @@
 DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000001)
 {
 	External (_SB.PCI0, DeviceObj)
-	External (_SB.PWRB, DeviceObj)
 
 	External (_SB.LNKA._STA, IntObj)
 	External (_SB.LNKB._STA, IntObj)
@@ -15,16 +14,14 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 	External (_SB.PCI0.B0D4, DeviceObj)
 	External (_SB.PCI0.EHC1, DeviceObj)
 	External (_SB.PCI0.EHC2, DeviceObj)
-	External (_SB.PCI0.GFX0, DeviceObj)
 	External (_SB.PCI0.GLAN, DeviceObj)
+	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
-	External (_SB.PCI0.PEG2, DeviceObj)
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
 	External (_SB.PCI0.RP07, DeviceObj)
 	External (_SB.PCI0.RP08, DeviceObj)
-	External (_SB.PCI0.SAT0, DeviceObj)
 	External (_SB.PCI0.SAT1, DeviceObj)
 	External (_SB.PCI0.USB1, DeviceObj)
 	External (_SB.PCI0.USB2, DeviceObj)
@@ -34,13 +31,10 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 	External (_SB.PCI0.USB6, DeviceObj)
 	External (_SB.PCI0.USB7, DeviceObj)
 	External (_SB.PCI0.WMI1, DeviceObj)
-	External (_SB.PCI0.XHC,  DeviceObj)
 
 	External (_SB.PCI0.LPCB.COPR, DeviceObj)
 	External (_SB.PCI0.LPCB.RMSC, DeviceObj)
-	External (_SB.PCI0.PEG0.PEGP, DeviceObj)
-	External (_SB.PCI0.PEG2.MVL3, DeviceObj)
-	External (_SB.PCI0.PEG2.MVL4, DeviceObj)
+	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
 	External (_SB.PCI0.RP05.MVL1, DeviceObj)
 	External (_SB.PCI0.RP05.MVL2, DeviceObj)
 	External (_SB.PCI0.RP05.PXSX, DeviceObj)
@@ -89,71 +83,36 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 		/* Disabling the B0D4 device */
 		Scope (B0D4) { Name (_STA, Zero) }
 
-		/* Adding the BUS0 device to SBUS */
-		Device (SBUS.BUS0)
+		/* Adding device properties to EHC1 */
+		Method (EHC1._DSM, 4)
 		{
-			Name (_ADR, Zero)
-			Name (_CID, "smbus")
-			Device (DVL0)
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			Return (Package()
 			{
-				Name (_ADR, 0x57)
-				Name (_CID, "diagsvault")
-				Method (_DSM, 4)
-				{
-					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
-					Return (Package() { "address", 0x57 })
-				}
-			}
+				"AAPL,clock-id", Buffer() { 0x01 },
+				"AAPL,current-available", 0x0834,
+				"AAPL,current-extra", 0x0898,
+				"AAPL,current-extra-in-sleep", 0x0640,
+				"AAPL,current-in-sleep", 0x03E8,
+				"AAPL,device-internal", 0x02,
+				"AAPL,max-port-current-in-sleep", 0x0834
+			})
 		}
 
-		/* Adding device properties & muxing patch to EHC1 */
-		Scope (EHC1)
+		/* Adding device properties to EHC2 */
+		Method (EHC2._DSM, 4)
 		{
-			Method (_DSM, 4)
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			Return (Package()
 			{
-				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
-				Return (Package()
-				{
-					"AAPL,clock-id", Buffer() { 0x01 },
-					"AAPL,current-available", 0x0834,
-					"AAPL,current-extra", 0x0898,
-					"AAPL,current-extra-in-sleep", 0x0640,
-					"AAPL,current-in-sleep", 0x03E8,
-					"AAPL,device-internal", 0x02,
-					"AAPL,max-port-current-in-sleep", 0x0834
-				})
-			}
-
-			Name (XHCN, One)
-			Method (XHCA, 0) { Store (One, \_SB.PCI0.XHC1.PAHC) }
-			Method (XHCB, 0) { Store (One, \_SB.PCI0.XHC1.PBHC) }
-			Method (XHCC, 0) { Store (One, \_SB.PCI0.XHC1.PCHC) }
-			Method (XHCD, 0) { Store (One, \_SB.PCI0.XHC1.PDHC) }
-			Method (EHCA, 0) { Store (Zero, \_SB.PCI0.XHC1.PAHC) }
-			Method (EHCB, 0) { Store (Zero, \_SB.PCI0.XHC1.PBHC) }
-			Method (EHCC, 0) { Store (Zero, \_SB.PCI0.XHC1.PCHC) }
-			Method (EHDC, 0) { Store (Zero, \_SB.PCI0.XHC1.PDHC) }
-		}
-
-		/* Adding device properties & muxing patch to EHC2 */
-		Scope (EHC2)
-		{
-			Method (_DSM, 4)
-			{
-				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
-				Return (Package()
-				{
-					"AAPL,clock-id", Buffer() { 0x01 },
-					"AAPL,current-available", 0x0834,
-					"AAPL,current-extra", 0x0898,
-					"AAPL,current-extra-in-sleep", 0x0640,
-					"AAPL,current-in-sleep", 0x03E8,
-					"AAPL,device-internal", 0x02,
-					"AAPL,max-port-current-in-sleep", 0x0834
-				})
-			}
-
-			Name (XHCN, One)
+				"AAPL,clock-id", Buffer() { 0x01 },
+				"AAPL,current-available", 0x0834,
+				"AAPL,current-extra", 0x0898,
+				"AAPL,current-extra-in-sleep", 0x0640,
+				"AAPL,current-in-sleep", 0x03E8,
+				"AAPL,device-internal", 0x02,
+				"AAPL,max-port-current-in-sleep", 0x0834
+			})
 		}
 
 		/* Disabling the GLAN device */
@@ -224,12 +183,9 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 
 		Scope (PEG0)
 		{
-			/* Disabling the PEGP device */
-			Scope (PEGP) { Name (_STA, Zero) }
-			/* Adding a new GFX0 device */
-			Device (GFX0)
+			/* Adding device properties to GFX0 */
+			Scope (GFX0)
 			{
-				Name (_ADR, Zero)
 				/* The vendor ID/device ID of the GFX0 device is stored here */
 				OperationRegion (GFXH, PCI_Config, Zero, 0x40)
 				Field (GFXH, ByteAcc, NoLock, Preserve)
@@ -301,12 +257,9 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 			}
 		}
 
-		/* Disabling the GFX0 device */
-		Scope (GFX0) { Name (_STA, Zero) }
-		/* Adding a new IGPU device */
-		Device (IGPU)
+		/* Adding device properties to IGPU */
+		Scope (IGPU)
 		{
-			Name (_ADR, 0x00020000)
 			/* The vendor ID/device ID of the IGPU device is stored here */
 			OperationRegion (IGPH, PCI_Config, Zero, 0x40)
 			Field (IGPH, ByteAcc, NoLock, Preserve)
@@ -406,22 +359,18 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 			}
 		}
 
-		/* Adding a new IMEI device */
-		Device (IMEI)
+		/* Adding device properties to IMEI */
+		Method (IMEI._DSM, 4)
 		{
-			Name (_ADR, 0x00160000)
-			Method (_DSM, 4)
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			/* If HD 2000/(P)3000 is present, the device ID of the IMEI device must be changed for the HD 3000 kexts to load on a 7 Series chipset */
+			If (LOr (LOr (LOr (LEqual (\_SB.PCI0.IGPU.DID0, 0x0102), LEqual (\_SB.PCI0.IGPU.DID0, 0x0112)), LEqual (\_SB.PCI0.IGPU.DID0, 0x0122)), LEqual (\_SB.PCI0.IGPU.DID0, 0x010A)))
 			{
-				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
-				/* If HD 2000/(P)3000 is present, the device ID of the IMEI device must be changed for the HD 3000 kexts to load on a 7 Series chipset */
-				If (LOr (LOr (LOr (LEqual (\_SB.PCI0.IGPU.DID0, 0x0102), LEqual (\_SB.PCI0.IGPU.DID0, 0x0112)), LEqual (\_SB.PCI0.IGPU.DID0, 0x0122)), LEqual (\_SB.PCI0.IGPU.DID0, 0x010A)))
-				{
-					/* Injecting device properties for Sandy Bridge HD 2000/(P)3000 with Ivy Bridge chipset */
-					Return (Package() { "device-id", Buffer() { 0x3A, 0x1C, 0x00, 0x00 } })
-				}
-
-				Return (Zero)
+				/* Injecting device properties for Sandy Bridge HD 2000/(P)3000 with Ivy Bridge chipset */
+				Return (Package() { "device-id", Buffer() { 0x3A, 0x1C, 0x00, 0x00 } })
 			}
+
+			Return (Zero)
 		}
 
 		Scope (LPCB)
@@ -442,21 +391,8 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 			}
 		}
 
-		/* Adding a new MCHC device */
-		Device (MCHC) { Name (_ADR, Zero) }
-
-		Scope (PEG2)
-		{
-			/* Disabling the MVLx devices */
-			Scope (MVL3) { Name (_STA, Zero) }
-			Scope (MVL4) { Name (_STA, Zero) }
-		}
-
-		/* Disabling the SATx devices */
-		Scope (SAT0) { Name (_STA, Zero) }
+		/* Disabling the SAT1 device */
 		Scope (SAT1) { Name (_STA, Zero) }
-		/* Adding a new SATA device */
-		Device (SATA) { Name (_ADR, 0x001F0002) }
 
 		/* Disabling the USBx devices */
 		Scope (USB1) { Name (_STA, Zero) }
@@ -470,76 +406,20 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 		/* Disabling the WMI1 device */
 		Scope (WMI1) { Name (_STA, Zero) }
 
-		/* Disabling the XHC device */
-		Scope (XHC) { Name (_STA, Zero) }
-		/* Adding a new XHC1 device (USB 3.0) */
-		Device (XHC1)
+		/* Adding device properties to XHC1 */
+		Method (XHC1._DSM, 4)
 		{
-			Name (_ADR, 0x00140000)
-			OperationRegion (XH1C, PCI_Config, 0xD0, 0x10)
-			Field (XH1C, ByteAcc, NoLock, Preserve)
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			Return (Package()
 			{
-				PAHC,	1,
-				PBHC,	1,
-				PCHC,	1,
-				PDHC,	1,
-				Offset (0x08),
-				PASS,	1,
-				PBSS,	1,
-				PCSS,	1,
-				PDSS,	1
-			}
-
-			Device (RHUB)
-			{
-				Name (_ADR, Zero)
-				Device (PRT1)
-				{
-					Name (_ADR, One)
-					Name (MUXS, "EHCA")
-				}
-
-				Device (PRT2)
-				{
-					Name (_ADR, 0x02)
-					Name (MUXS, "EHCB")
-				}
-
-				Device (PRT3)
-				{
-					Name (_ADR, 0x03)
-					Name (MUXS, "EHCC")
-				}
-
-				Device (PRT4)
-				{
-					Name (_ADR, 0x04)
-					Name (MUXS, "EHCD")
-				}
-			}
-
-			Method (XHCA, 0) { Store (One, PAHC) }
-			Method (XHCB, 0) { Store (One, PBHC) }
-			Method (XHCC, 0) { Store (One, PCHC) }
-			Method (XHCD, 0) { Store (One, PDHC) }
-			Method (EHCA, 0) { Store (Zero, PAHC) }
-			Method (EHCB, 0) { Store (Zero, PBHC) }
-			Method (EHCC, 0) { Store (Zero, PCHC) }
-			Method (EHDC, 0) { Store (Zero, PDHC) }
-			Method (_DSM, 4)
-			{
-				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
-				Return (Package()
-				{
-					"AAPL,clock-id", Buffer() { 0x02 },
-					"AAPL,current-available", 0x0834,
-					"AAPL,current-extra", 0x0898,
-					"AAPL,current-extra-in-sleep", 0x0640,
-					"AAPL,current-in-sleep", 0x03E8,
-					"AAPL,device-internal", 0x02,
-					"AAPL,max-port-current-in-sleep", 0x0834
-				})
-			}
+				"AAPL,clock-id", Buffer() { 0x01 },
+				"AAPL,current-available", 0x0834,
+				"AAPL,current-extra", 0x0898,
+				"AAPL,current-extra-in-sleep", 0x0640,
+				"AAPL,current-in-sleep", 0x03E8,
+				"AAPL,device-internal", 0x02,
+				"AAPL,max-port-current-in-sleep", 0x0834
+			})
 		}
 	}
 
