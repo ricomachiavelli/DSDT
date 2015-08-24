@@ -242,18 +242,18 @@ DefinitionBlock ("SSDT-GA-Z77X-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 			If (LEqual (\_SB.PCI0.PEG0.GFX0.VID0, 0x8086))
 			{
 				/* Since only an IGPU is present, the layout ID and the hda-gfx property need to be injected for Intel HDMI audio to work properly */
-				/* Injecting device properties for layout ID 7 & Intel HDMI audio */
+				/* Injecting device properties for layout ID 5 & Intel HDMI audio */
 				Return (Package ()
 				{
-					"layout-id", Unicode("\x07"),
+					"layout-id", Unicode("\x05"),
 					"hda-gfx", Buffer() { "onboard-1" }
 				})
 			}
 			Else
 			{
 				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will only inject the layout ID instead */
-				/* Injecting device properties for layout ID 1 */
-				Return (Package() { "layout-id", Unicode("\x07") })
+				/* Injecting device properties for layout ID 5 */
+				Return (Package() { "layout-id", Unicode("\x05") })
 			}
 		}
 
