@@ -13,8 +13,8 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 	External (_SB.LNKH._STA, IntObj)
 
 	External (_SB.PCI0.B0D4, DeviceObj)
-	External (_SB.PCI0.EHC1, DeviceObj)
-	External (_SB.PCI0.EHC2, DeviceObj)
+	External (_SB.PCI0.EH01, DeviceObj)
+	External (_SB.PCI0.EH02, DeviceObj)
 	External (_SB.PCI0.GLAN, DeviceObj)
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
@@ -90,8 +90,25 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 		/* Disabling the B0D4 device */
 		Scope (B0D4) { Name (_STA, Zero) }
 
-		/* Adding device properties to EHC1 */
-		Method (EHC1._DSM, 4)
+		/* Adding the BUS0 device to SBUS */
+		Device (SBUS.BUS0)
+		{
+			Name (_ADR, Zero)
+			Name (_CID, "smbus")
+			Device (DVL0)
+			{
+				Name (_ADR, 0x57)
+				Name (_CID, "diagsvault")
+				Method (_DSM, 4)
+				{
+					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+					Return (Package() { "address", 0x57 })
+				}
+			}
+		}
+
+		/* Adding device properties to EH01 */
+		Method (EH01._DSM, 4)
 		{
 			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
 			Return (Package()
@@ -106,8 +123,8 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 			})
 		}
 
-		/* Adding device properties to EHC2 */
-		Method (EHC2._DSM, 4)
+		/* Adding device properties to EH02 */
+		Method (EH02._DSM, 4)
 		{
 			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
 			Return (Package()
@@ -457,8 +474,8 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 		/* Disabling the WMI1 device */
 		Scope (WMI1) { Name (_STA, Zero) }
 
-		/* Adding device properties to XHC1 */
-		Method (XHC1._DSM, 4)
+		/* Adding device properties to XH01 */
+		Method (XH01._DSM, 4)
 		{
 			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
 			Return (Package()
