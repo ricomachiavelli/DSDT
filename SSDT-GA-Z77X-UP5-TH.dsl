@@ -58,6 +58,24 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 	External (_TZ.TZ00, PkgObj)
 	External (_TZ.TZ01, PkgObj)
 
+	/* Calls to _OSI in DSDT are routed to here */
+	Method(XOSI, 1)
+	{
+		/* Simulates Windows 2012 (Windows 8) */
+		Name(WINV, Package()
+		{
+			"Windows",			// Generic Windows query
+			"Windows 2001",		// Windows XP
+			"Windows 2001 SP2",	// Windows XP SP2
+			"Windows 2006",		// Windows Vista
+			"Windows 2006 SP1",	// Windows Vista SP1
+			"Windows 2009",		// Windows 7/Windows Server 2008 R2
+			"Windows 2012"		// Windows 8/Windows Server 2012
+		})
+
+		Return (LNotEqual(Match(WINV, MEQ, Arg0, MTR, 0, 0), Ones))
+	}
+
 	Method (\_SB._INI)
 	{
 		/* These devices already have _STA objects, we set them to 0 to disable them */
@@ -104,7 +122,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 				}
 			}
 		}
-		
+
 		/* Adding device properties to EH01 */
 		Method (EH01._DSM, 4)
 		{
@@ -232,7 +250,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 						Return (Package() { "AAPL,slot-name", Buffer() { "Thunderbolt Slot 4" } })
 					}
 				}
-			
+
 				Method (_DSM, 4)
 				{
 					If (LEqual (Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
@@ -322,6 +340,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 						Return (Package()
 						{
 							"AAPL,slot-name", Buffer() { "Slot-1" },
+							"device_type", Buffer() { "Display Controller" },
 							"hda-gfx", Buffer() { "onboard-1" }
 						})
 					}
@@ -342,6 +361,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 						/* Injecting generic device properties for discrete graphics with HDMI audio */
 						Return (Package()
 						{
+							"device_type", Buffer() { "Audio Controller" },
 							"hda-gfx", Buffer() { "onboard-1" }
 						})
 					}
@@ -384,7 +404,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 				VID0,	16,
 				DID0,	16
 			}
-			
+
 			Method (_DSM, 4)
 			{
 				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
@@ -559,4 +579,3 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 		Scope (FAN4) { Name (_STA, Zero) }
 	}
 }
-
