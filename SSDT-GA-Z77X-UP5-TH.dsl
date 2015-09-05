@@ -34,7 +34,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 	External (_SB.PCI0.USB7, DeviceObj)
 	External (_SB.PCI0.WMI1, DeviceObj)
 
-	External (_SB.PCI0.LPCB.COPR, DeviceObj)
 	External (_SB.PCI0.LPCB.RMSC, DeviceObj)
 	External (_SB.PCI0.LPCB.SIO1, DeviceObj)
 	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
@@ -59,7 +58,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 	External (_TZ.TZ01, PkgObj)
 
 	/* Calls to _OSI in DSDT are routed to here */
-	Method(XOSI, 1)
+	Method(XOSI, 1, Serialized)
 	{
 		/* Simulates Windows 2012 (Windows 8) */
 		Name(WINV, Package()
@@ -117,7 +116,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 				Name (_CID, "diagsvault")
 				Method (_DSM, 4)
 				{
-					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 					Return (Package() { "address", 0x57 })
 				}
 			}
@@ -126,7 +125,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 		/* Adding device properties to EH01 */
 		Method (EH01._DSM, 4)
 		{
-			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 			Return (Package()
 			{
 				"AAPL,clock-id", Buffer() { 0x01 },
@@ -142,7 +141,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 		/* Adding device properties to EH02 */
 		Method (EH02._DSM, 4)
 		{
-			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 			Return (Package()
 			{
 				"AAPL,clock-id", Buffer() { 0x01 },
@@ -163,7 +162,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 			Name (_ADR, 0x00190000)
 			Method (_DSM, 4)
 			{
-				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 				/* Injecting device properties for Intel 82579V Gigabit Ethernet */
 				Return (Package() { "device_type", Buffer() { "Ethernet Controller" } })
 			}
@@ -289,7 +288,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 					Method (_DSM, 4)
 					{
 						/* Injecting device properties for VIA VT6308 FireWire */
-						If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+						If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 						Return (Package()
 						{
 							"fwports", Unicode("\x01"),
@@ -331,7 +330,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 
 				Method (_DSM, 4)
 				{
-					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 					/* If there isn't a discrete GPU present (only IGPU), the vendor ID of the GFX0 device will be 0x8086 (Intel) */
 					/* We first need to check if the vendor ID of GFX0 isn't 0x8086 before injecting the device properties */
 					If (LNotEqual (\_SB.PCI0.PEG0.GFX0.VID0, 0x8086))
@@ -354,7 +353,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 				Name (_ADR, One)
 				Method (_DSM, 4)
 				{
-					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 					/* Again, we check if the vendor ID of GFX0 isn't 0x8086 before injecting the device properties */
 					If (LNotEqual (\_SB.PCI0.PEG0.GFX0.VID0, 0x8086))
 					{
@@ -374,7 +373,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 		/* Adding device properties to HDEF */
 		Method (HDEF._DSM, 4)
 		{
-			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 			/* We first need to check if the vendor ID of GFX0 is 0x8086 before injecting the device properties */
 			If (LEqual (\_SB.PCI0.PEG0.GFX0.VID0, 0x8086))
 			{
@@ -407,7 +406,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 
 			Method (_DSM, 4)
 			{
-				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 				/* We first need to check if the vendor ID of GFX0 is 0x8086 to confirm that there isn't a discrete GPU */
 				If (LEqual (\_SB.PCI0.PEG0.GFX0.VID0, 0x8086))
 				{
@@ -499,7 +498,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 		/* Adding device properties to IMEI */
 		Method (IMEI._DSM, 4)
 		{
-			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 			/* If HD 2000/(P)3000 is present, the device ID of the IMEI device must be changed for the HD 3000 kexts to load on a 7 Series chipset */
 			If (LOr (LOr (LOr (LEqual (\_SB.PCI0.IGPU.DID0, 0x0102), LEqual (\_SB.PCI0.IGPU.DID0, 0x0112)), LEqual (\_SB.PCI0.IGPU.DID0, 0x0122)), LEqual (\_SB.PCI0.IGPU.DID0, 0x010A)))
 			{
@@ -512,22 +511,10 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 
 		Scope (LPCB)
 		{
-			/* Disabling the COPR device */
-			Scope (COPR) { Name (_STA, Zero) }
 			/* Disabling the RMSC device */
 			Scope (RMSC) { Name (_STA, Zero) }
 			/* Disabling the SIO1 device */
 			Scope (SIO1) { Name (_STA, Zero) }
-			/* Adding a new MATH device */
-			Device (MATH)
-			{
-				Name (_HID, EisaId ("PNP0C04"))
-				Name (_CRS, ResourceTemplate ()
-				{
-					IO (Decode16, 0x00F0, 0x00F0, 0x00, 0x10)
-					IRQNoFlags() { 13 }
-				})
-			}
 		}
 
 		Scope (PEG2)
@@ -555,7 +542,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00
 		/* Adding device properties to XH01 */
 		Method (XH01._DSM, 4)
 		{
-			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 } ) }
+			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 			Return (Package()
 			{
 				"AAPL,clock-id", Buffer() { 0x01 },

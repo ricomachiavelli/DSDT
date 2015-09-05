@@ -1,7 +1,6 @@
-DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000001)
+DefinitionBlock ("SSDT-GA-Z77X-UD4H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000001)
 {
 	External (_SB.PCI0, DeviceObj)
-	External (_SB.PWRB, DeviceObj)
 
 	External (_SB.LNKA._STA, IntObj)
 	External (_SB.LNKB._STA, IntObj)
@@ -19,8 +18,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
-	External (_SB.PCI0.PEG2, DeviceObj)
-	External (_SB.PCI0.RP02, DeviceObj)
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
 	External (_SB.PCI0.RP07, DeviceObj)
@@ -36,11 +33,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 	External (_SB.PCI0.WMI1, DeviceObj)
 
 	External (_SB.PCI0.LPCB.RMSC, DeviceObj)
-	External (_SB.PCI0.LPCB.SIO1, DeviceObj)
 	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
-	External (_SB.PCI0.PEG2.MVL3, DeviceObj)
-	External (_SB.PCI0.PEG2.MVL4, DeviceObj)
-	External (_SB.PCI0.RP02.PXSX, DeviceObj)
 	External (_SB.PCI0.RP05.MVL1, DeviceObj)
 	External (_SB.PCI0.RP05.MVL2, DeviceObj)
 	External (_SB.PCI0.RP05.PXSX, DeviceObj)
@@ -158,29 +151,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 
 		/* Disabling the GLAN device */
 		Scope (GLAN) { Name (_STA, Zero) }
-		/* Adding a new ETH1 device */
-		Device (ETH1)
-		{
-			Name (_ADR, 0x00190000)
-			Method (_DSM, 4)
-			{
-				If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
-				/* Injecting device properties for Intel 82579V Gigabit Ethernet */
-				Return (Package()
-				{
-					"device_type", Buffer() { "Ethernet Controller" },
-					"location", Buffer() { "2" }
-				})
-			}
-		}
-
-		Scope (RP02)
-		{
-			/* Disabling the PXSX device */
-			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new SATA device */
-			Device (SATA) { Name (_ADR, Zero) }
-		}
 
 		Scope (RP05)
 		{
@@ -189,61 +159,51 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 			Scope (MVL2) { Name (_STA, Zero) }
 			/* Disabling the PXSX device */
 			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new ARPT device (AirPort) */
-			Device (ARPT) { Name (_ADR, Zero) }
+			/* Adding a new XH02 device (USB 3.0) */
+			Device (XH02)
+			{
+				Name (_ADR, Zero)
+				Method (_DSM, 4)
+				{
+					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
+					/* Injecting device properties for VIA VL800 USB 3.0 */
+					Return (Package()
+					{
+						"AAPL,clock-id", Buffer() { 0x02 },
+						"AAPL,current-available", 0x0834,
+						"AAPL,current-extra", 0x0898,
+						"AAPL,current-extra-in-sleep", 0x0640,
+						"AAPL,current-in-sleep", 0x03E8,
+						"AAPL,device-internal", 0x02,
+						"AAPL,max-port-current-in-sleep", 0x0834
+					})
+				}
+			}
 		}
 
 		Scope (RP06)
 		{
 			/* Disabling the PXSX device */
 			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new FWBR device (FireWire) */
-			Device (FWBR)
-			{
-				Name (_ADR, Zero)
-				Device (FRWR)
-				{
-					/* This address needs to be set correctly (use lspci/dspci to find it) */
-					Name (_ADR, 0x06010000)
-					Name (_GPE, 0x1A)
-					Method (_DSM, 4)
-					{
-						/* Injecting device properties for VIA VT6308 FireWire */
-						If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
-						Return (Package()
-						{
-							"fwports", Unicode("\x02"),
-							"fws0", Unicode("\x01"),
-							"fwswappedbib", Unicode("\x01")
-						})
-					}
-				}
-			}
-
-			/* Fixing FireWire hotplugging/power management */
-			Method (\_SB._GPE._L1A, 0)
-			{
-				Notify (\_SB.PCI0.RP06.FWBR.FRWR, 0x02)
-				Notify (\_SB.PWRB, 0x02)
-			}
+			/* Adding a new ARPT device (AirPort) */
+			Device (ARPT) { Name (_ADR, Zero) }
 		}
 
 		Scope (RP07)
 		{
 			/* Disabling the PXSX device */
 			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new ETH0 device */
-			Device (ETH0)
+			/* Adding a new GIGE device */
+			Device (GIGE)
 			{
 				Name (_ADR, Zero)
 				Method (_DSM, 4)
 				{
 					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
-					/* Injecting device properties for Atheros AR8151/AR8161 Gigabit Ethernet */
+					/* Injecting device properties for Realtek RTL8168E Gigabit Ethernet */
 					Return (Package()
 					{
-						"device_type", Buffer() { "Ethernet Controller" },
-						"location", Buffer() { "1" }
+						"device_type", Buffer() { "Ethernet Controller" }
 					})
 				}
 			}
@@ -319,19 +279,19 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 			/* We first need to check if the vendor ID of GFX0 is 0x8086 before injecting the device properties */
 			If (LEqual (\_SB.PCI0.PEG0.GFX0.VID0, 0x8086))
 			{
-				/* Since only an IGPU is present, the layout ID needs to be set to 3 for HDMI audio to work properly */
-				/* Injecting device properties for layout ID 3 & Intel HDMI audio */
+				/* Since only an IGPU is present, the layout ID and the hda-gfx property need to be injected for Intel HDMI audio to work properly */
+				/* Injecting device properties for layout ID 5 & Intel HDMI audio */
 				Return (Package ()
 				{
-					"layout-id", Unicode("\x03"),
+					"layout-id", Unicode("\x05"),
 					"hda-gfx", Buffer() { "onboard-1" }
 				})
 			}
 			Else
 			{
-				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will use layout ID 1 instead */
-				/* Injecting device properties for layout ID 1 */
-				Return (Package() { "layout-id", Unicode("\x01") })
+				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will only inject the layout ID instead */
+				/* Injecting device properties for layout ID 5 */
+				Return (Package() { "layout-id", Unicode("\x05") })
 			}
 		}
 
@@ -455,15 +415,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 		{
 			/* Disabling the RMSC device */
 			Scope (RMSC) { Name (_STA, Zero) }
-			/* Disabling the SIO1 device */
-			Scope (SIO1) { Name (_STA, Zero) }
-		}
-
-		Scope (PEG2)
-		{
-			/* Disabling the MVLx devices */
-			Scope (MVL3) { Name (_STA, Zero) }
-			Scope (MVL4) { Name (_STA, Zero) }
 		}
 
 		/* Disabling the SAT1 device */
