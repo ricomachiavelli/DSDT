@@ -116,11 +116,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 			{
 				Name (_ADR, 0x57)
 				Name (_CID, "diagsvault")
-				Method (_DSM, 4)
-				{
-					If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
-					Return (Package() { "address", 0x57 })
-				}
 			}
 		}
 
@@ -281,7 +276,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 						Return (Package()
 						{
 							"AAPL,slot-name", Buffer() { "Slot-1" },
-							"device_type", Buffer() { "Display Controller" },
 							"hda-gfx", Buffer() { "onboard-1" }
 						})
 					}
@@ -487,7 +481,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 			If (LEqual(Arg2, Zero)) { Return (Buffer() { 0x03 }) }
 			Return (Package()
 			{
-				"AAPL,clock-id", Buffer() { 0x01 },
+				"AAPL,clock-id", Buffer() { 0x02 },
 				"AAPL,current-available", 0x0834,
 				"AAPL,current-extra", 0x0898,
 				"AAPL,current-extra-in-sleep", 0x0640,
