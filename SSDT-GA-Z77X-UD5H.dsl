@@ -63,18 +63,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 	Method(XOSI, 1, Serialized)
 	{
 		/* Simulates Windows 2012 (Windows 8) */
-		Name(WINV, Package()
-		{
-			"Windows",			// Generic Windows query
-			"Windows 2001",		// Windows XP
-			"Windows 2001 SP2",	// Windows XP SP2
-			"Windows 2006",		// Windows Vista
-			"Windows 2006 SP1",	// Windows Vista SP1
-			"Windows 2009",		// Windows 7/Windows Server 2008 R2
-			"Windows 2012"		// Windows 8/Windows Server 2012
-		})
-
-		Return (LNotEqual(Match(WINV, MEQ, Arg0, MTR, 0, 0), Ones))
+		Return (LEqual (Arg0, "Windows 2012"))
 	}
 
 	Method (\_SB._INI)
@@ -391,10 +380,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD5H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x0000
 					If (LEqual (\_SB.PCI0.IGPU.DID0, 0x102))
 					{
 						/* Injecting device properties for Sandy Bridge Intel HD Graphics 2000 (AirPlay) */
-						Return (Package()
-						{
-							"AAPL,snb-platform-id", Buffer() { 0x01, 0x00, 0x03, 0x00 }
-						})
+						Return (Package() { "AAPL,snb-platform-id", Buffer() { 0x01, 0x00, 0x03, 0x00 } })
 					}
 
 					/* If the device ID of the IGPU matches one of the HD (P)3000 device IDs, we will inject the proper snb-platform-id */
