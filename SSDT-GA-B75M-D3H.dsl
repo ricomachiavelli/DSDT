@@ -19,12 +19,8 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
-	External (_SB.PCI0.PEG2, DeviceObj)
-	External (_SB.PCI0.RP02, DeviceObj)
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
-	External (_SB.PCI0.RP07, DeviceObj)
-	External (_SB.PCI0.RP08, DeviceObj)
 	External (_SB.PCI0.SAT1, DeviceObj)
 	External (_SB.PCI0.USB1, DeviceObj)
 	External (_SB.PCI0.USB2, DeviceObj)
@@ -37,11 +33,8 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 
 	External (_SB.PCI0.LPCB.RMSC, DeviceObj)
 	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
-	External (_SB.PCI0.RP02.PXSX, DeviceObj)
 	External (_SB.PCI0.RP05.PXSX, DeviceObj)
 	External (_SB.PCI0.RP06.PXSX, DeviceObj)
-	External (_SB.PCI0.RP07.PXSX, DeviceObj)
-	External (_SB.PCI0.RP08.PXSX, DeviceObj)
 	External (_SB.PCI0.TPMX._STA, IntObj)
 
 	External (_SB.PCI0.LPCB.CWDT._STA, IntObj)
@@ -137,6 +130,14 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000
 
 		/* Disabling the GLAN device */
 		Scope (GLAN) { Name (_STA, Zero) }
+
+		Scope (RP03)
+		{
+			/* Disabling the PXSX device */
+			Scope (PXSX) { Name (_STA, Zero) }
+			/* Adding a new ARPT device (AirPort) */
+			Device (ARPT) { Name (_ADR, Zero) }
+		}
 
 		Scope (RP05)
 		{
