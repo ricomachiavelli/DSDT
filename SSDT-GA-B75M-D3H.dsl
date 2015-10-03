@@ -1,4 +1,4 @@
-DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000001)
+DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x00000001)
 {
 	External (_SB.PCI0, DeviceObj)
 	External (_SB.PWRB, DeviceObj)

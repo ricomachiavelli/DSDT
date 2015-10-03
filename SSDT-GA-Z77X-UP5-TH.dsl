@@ -1,4 +1,4 @@
-DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE", "tinySSDT", 0x00000001)
+DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x00000001)
 {
 	External (_SB.PCI0, DeviceObj)
 	External (_SB.PWRB, DeviceObj)
