@@ -13,10 +13,12 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0
 	External (_SB.LNKH._STA, IntObj)
 
 	External (_SB.PCI0.B0D4, DeviceObj)
+	External (_SB.PCI0.EH01, DeviceObj)
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
 	External (_SB.PCI0.PEG2, DeviceObj)
+	External (_SB.PCI0.RP01, DeviceObj)
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
 	External (_SB.PCI0.RP07, DeviceObj)
@@ -36,6 +38,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0
 	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
 	External (_SB.PCI0.PEG2.MVL3, DeviceObj)
 	External (_SB.PCI0.PEG2.MVL4, DeviceObj)
+	External (_SB.PCI0.RP01.PXSX, DeviceObj)
 	External (_SB.PCI0.RP05.MVL1, DeviceObj)
 	External (_SB.PCI0.RP05.MVL2, DeviceObj)
 	External (_SB.PCI0.RP05.PXSX, DeviceObj)
@@ -104,10 +107,9 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0
 		}
 
 		/* Adding device properties to EH01 */
-		Method (EH01._DSM, 4)
+		Scope (EH01)
 		{
-			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (Package()
+			Name (AAPL, Package()
 			{
 				"AAPL,current-available", 2100,
 				"AAPL,current-extra", 2200,
@@ -116,21 +118,19 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0
 				"AAPL,device-internal", 0x02,
 				"AAPL,max-port-current-in-sleep", 2100
 			})
+
+			Method (_DSM, 4, NotSerialized)
+			{
+				If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
+				Return (AAPL)
+			}
 		}
 
 		/* Adding device properties to EH02 */
 		Method (EH02._DSM, 4)
 		{
 			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (Package()
-			{
-				"AAPL,current-available", 2100,
-				"AAPL,current-extra", 2200,
-				"AAPL,current-extra-in-sleep", 1600,
-				"AAPL,current-in-sleep", 1600,
-				"AAPL,device-internal", 0x02,
-				"AAPL,max-port-current-in-sleep", 2100
-			})
+			Return (^^EH01.AAPL)
 		}
 
 		/* Adding device properties to GIGE */
@@ -501,15 +501,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0
 		Method (XH01._DSM, 4)
 		{
 			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (Package()
-			{
-				"AAPL,current-available", 2100,
-				"AAPL,current-extra", 2200,
-				"AAPL,current-extra-in-sleep", 1600,
-				"AAPL,current-in-sleep", 1600,
-				"AAPL,device-internal", 0x02,
-				"AAPL,max-port-current-in-sleep", 2100
-			})
+			Return (^^EH01.AAPL)
 		}
 	}
 

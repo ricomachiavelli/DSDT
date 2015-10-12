@@ -12,6 +12,7 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 	External (_SB.LNKH._STA, IntObj)
 
 	External (_SB.PCI0.B0D4, DeviceObj)
+	External (_SB.PCI0.EH01, DeviceObj)
 	External (_SB.PCI0.GLAN, DeviceObj)
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
@@ -94,10 +95,9 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 		}
 
 		/* Adding device properties to EH01 */
-		Method (EH01._DSM, 4)
+		Scope (EH01)
 		{
-			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (Package()
+			Name (AAPL, Package()
 			{
 				"AAPL,current-available", 2100,
 				"AAPL,current-extra", 2200,
@@ -106,21 +106,19 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 				"AAPL,device-internal", 0x02,
 				"AAPL,max-port-current-in-sleep", 2100
 			})
+
+			Method (_DSM, 4, NotSerialized)
+			{
+				If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
+				Return (AAPL)
+			}
 		}
 
 		/* Adding device properties to EH02 */
 		Method (EH02._DSM, 4)
 		{
 			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (Package()
-			{
-				"AAPL,current-available", 2100,
-				"AAPL,current-extra", 2200,
-				"AAPL,current-extra-in-sleep", 1600,
-				"AAPL,current-in-sleep", 1600,
-				"AAPL,device-internal", 0x02,
-				"AAPL,max-port-current-in-sleep", 2100
-			})
+			Return (^^EH01.AAPL)
 		}
 
 		/* Disabling the GLAN device */
@@ -213,18 +211,18 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 			If (^^PEG0.GFX0.VID0 != 0x8086)
 			{
 				/* Since only an IGPU is present, the layout ID needs to be set to 3 for HDMI audio to work properly */
-				/* Injecting device properties for layout ID 5 & Intel HDMI audio */
+				/* Injecting device properties for layout ID 3 & Intel HDMI audio */
 				Return (Package ()
 				{
-					"layout-id", Unicode("\x05”),
+					"layout-id", Unicode("\x03"),
 					"hda-gfx", Buffer() { "onboard-1" }
 				})
 			}
 			Else
 			{
 				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will use layout ID 1 instead */
-				/* Injecting device properties for layout ID 5 */
-				Return (Package() { "layout-id", Unicode("\x05”) })
+				/* Injecting device properties for layout ID 1 */
+				Return (Package() { "layout-id", Unicode("\x01") })
 			}
 		}
 
@@ -355,15 +353,7 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 		Method (XH01._DSM, 4)
 		{
 			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (Package()
-			{
-				"AAPL,current-available", 2100,
-				"AAPL,current-extra", 2200,
-				"AAPL,current-extra-in-sleep", 1600,
-				"AAPL,current-in-sleep", 1600,
-				"AAPL,device-internal", 0x02,
-				"AAPL,max-port-current-in-sleep", 2100
-			})
+			Return (^^EH01.AAPL)
 		}
 	}
 
