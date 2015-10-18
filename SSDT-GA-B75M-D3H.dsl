@@ -1,4 +1,4 @@
-DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x00000001)
+DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "General", 0x00000001)
 {
 	External (_SB.PCI0, DeviceObj)
 
@@ -165,9 +165,9 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 				Method (_DSM, 4)
 				{
 					If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-					/* If there isn't a discrete GPU present (only IGPU), the vendor ID of the GFX0 device will be 0x8086 (Intel) */
-					/* We first need to check if the vendor ID of GFX0 isn't 0x8086 before injecting the device properties */
-					If (VID0 != 0x8086)
+					/* If there isn't a discrete GPU present (only IGPU), the vendor ID of the GFX0 device will be 0xFFFF (Intel) */
+					/* We first need to check if the vendor ID of GFX0 isn't 0xFFFF before injecting the device properties */
+					If (VID0 != 0xFFFF)
 					{
 						/* Injecting generic device properties for discrete graphics with HDMI audio */
 						Return (Package()
@@ -187,8 +187,8 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 				Method (_DSM, 4)
 				{
 					If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-					/* Again, we check if the vendor ID of GFX0 isn't 0x8086 before injecting the device properties */
-					If (^^GFX0.VID0 != 0x8086)
+					/* Again, we check if the vendor ID of GFX0 isn't 0xFFFF before injecting the device properties */
+					If (^^GFX0.VID0 != 0xFFFF)
 					{
 						/* Injecting generic device properties for discrete graphics with HDMI audio */
 						Return (Package()
@@ -207,8 +207,8 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 		Method (HDEF._DSM, 4)
 		{
 			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			/* We first need to check if the vendor ID of GFX0 is 0x8086 before injecting the device properties */
-			If (^^PEG0.GFX0.VID0 != 0x8086)
+			/* We first need to check if the vendor ID of GFX0 is 0xFFFF before injecting the device properties */
+			If (^^PEG0.GFX0.VID0 == 0xFFFF)
 			{
 				/* Since only an IGPU is present, the layout ID needs to be set to 3 for HDMI audio to work properly */
 				/* Injecting device properties for layout ID 3 & Intel HDMI audio */
@@ -220,7 +220,7 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 			}
 			Else
 			{
-				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will use layout ID 1 instead */
+				/* If the vendor ID of GFX0 isn't 0xFFFF, we can assume a discrete GPU is present, so we will use layout ID 1 instead */
 				/* Injecting device properties for layout ID 1 */
 				Return (Package() { "layout-id", Unicode("\x01") })
 			}
@@ -240,8 +240,8 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 			Method (_DSM, 4)
 			{
 				If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-				/* We first need to check if the vendor ID of GFX0 is 0x8086 to confirm that there isn't a discrete GPU */
-				If (^^PEG0.GFX0.VID0 == 0x8086)
+				/* We first need to check if the vendor ID of GFX0 is 0xFFFF to confirm that there isn't a discrete GPU */
+				If (^^PEG0.GFX0.VID0 == 0xFFFF)
 				{
 					/* If the device ID of the IGPU matches one of the HD (P)3000 device IDs, we will inject the proper snb-platform-id */
 					If ((DID0 == 0x112) || (DID0 == 0x122) || (DID0 == 0x10A))
@@ -262,7 +262,7 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 						Return (Package()
 						{
 							"AAPL,ig-platform-id", Buffer() { 0x0A, 0x00, 0x66, 0x01 },
-							"device-id", Buffer() { 0x66, 0x01, 0x00, 0x00 },
+							"device-id", Buffer() { 0x62, 0x01, 0x00, 0x00 },
 							"hda-gfx", Buffer() { "onboard-1" }
 						})
 					}
@@ -270,7 +270,7 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "tinySSDT", 0x0000
 					Else { Return (Package() { Zero }) }
 				}
 
-				/* If the vendor ID of GFX0 is not 0x8086, we can assume a discrete GPU is present and the IGPU is being used for AirPlay Mirroring */
+				/* If the vendor ID of GFX0 is not 0xFFFF, we can assume a discrete GPU is present and the IGPU is being used for AirPlay Mirroring */
 				Else
 				{
 					/* If the device ID of the IGPU matches the HD 2000 device ID, we will inject the proper snb-platform-id */
