@@ -18,10 +18,8 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
 	External (_SB.PCI0.PEG2, DeviceObj)
-	External (_SB.PCI0.RP01, DeviceObj)
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
-	External (_SB.PCI0.RP07, DeviceObj)
 	External (_SB.PCI0.RP08, DeviceObj)
 	External (_SB.PCI0.SAT1, DeviceObj)
 	External (_SB.PCI0.USB1, DeviceObj)
@@ -38,12 +36,10 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00
 	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
 	External (_SB.PCI0.PEG2.MVL3, DeviceObj)
 	External (_SB.PCI0.PEG2.MVL4, DeviceObj)
-	External (_SB.PCI0.RP01.PXSX, DeviceObj)
 	External (_SB.PCI0.RP05.MVL1, DeviceObj)
 	External (_SB.PCI0.RP05.MVL2, DeviceObj)
 	External (_SB.PCI0.RP05.PXSX, DeviceObj)
 	External (_SB.PCI0.RP06.PXSX, DeviceObj)
-	External (_SB.PCI0.RP07.PXSX, DeviceObj)
 	External (_SB.PCI0.RP08.PXSX, DeviceObj)
 	External (_SB.PCI0.TPMX._STA, IntObj)
 
@@ -141,108 +137,11 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00
 			Return (Package() { "device_type", Buffer() { "Ethernet Controller" } })
 		}
 
-		Scope (RP01)
-		{
-			/* Disabling the PXSX device */
-			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new UPSB device (Thunderbolt) */
-			Device (UPSB)
-			{
-				Name (_ADR, Zero)
-				Method (_RMV, 0) { Return (Zero) }
-				Device (DSB0)
-				{
-					Name (_ADR, Zero)
-					Method (_RMV, 0) { Return (Zero) }
-					Device (NHI0)
-					{
-						Name (_ADR, Zero)
-						Name (_GPE, 0x14)
-						Name (_STR, Unicode ("Thunderbolt"))
-						Method (_STA, 0) { Return (0x0F) }
-						Method (_DSM, 4)
-						{
-							If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-							Return (Package() { "power-save", One, Buffer() { 0x00 } })
-						}
-					}
-				}
-
-				Device (DSB1)
-				{
-					Name (_ADR, 0x00030000)
-					Method (_RMV, 0) { Return (Zero) }
-					Method (_DSM, 4)
-					{
-						If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-						Return (Package() { "AAPL,slot-name", Buffer() { "Thunderbolt Slot 1" } })
-					}
-				}
-
-				Device (DSB2)
-				{
-					Name (_ADR, 0x00040000)
-					Method (_RMV, 0) { Return (Zero) }
-					Method (_DSM, 4)
-					{
-						If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-						Return (Package() { "AAPL,slot-name", Buffer() { "Thunderbolt Slot 2" } })
-					}
-				}
-
-				Device (DSB3)
-				{
-					Name (_ADR, 0x00050000)
-					Method (_RMV, 0) { Return (One) }
-					Method (_DSM, 4)
-					{
-						If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-						Return (Package() { "AAPL,slot-name", Buffer() { "Thunderbolt Slot 3" } })
-					}
-
-					Device (UPS0)
-					{
-						Name (_ADR, 0x00030000)
-						Method (_RMV, 0) { Return (One) }
-						Device (DEV0)
-						{
-							Name (_ADR, Zero)
-							Method (_RMV, 0) { Return (One) }
-						}
-					}
-				}
-
-				Device (DSB4)
-				{
-					Name (_ADR, 0x00060000)
-					Method (_RMV, 0) { Return (Zero) }
-					Method (_DSM, 4)
-					{
-						If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-						Return (Package() { "AAPL,slot-name", Buffer() { "Thunderbolt Slot 4" } })
-					}
-				}
-
-				Method (_DSM, 4)
-				{
-					If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-					Return (Package() { "PCI-Thunderbolt", One })
-				}
-			}
-
-			/* Fixing Thunderbolt hotplugging/power management (experimental - may not work!) */
-			Method (\_SB._GPE._E14, 0) { Notify (\_SB.PCI0.RP01, 0x02) }
-		}
-
 		Scope (RP05)
 		{
 			/* Disabling the MVLx devices */
 			Scope (MVL1) { Name (_STA, Zero) }
 			Scope (MVL2) { Name (_STA, Zero) }
-			/* Disabling the PXSX device */
-			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new ARPT device (AirPort) */
-			Device (ARPT) { Name (_ADR, Zero) }
 		}
 
 		Scope (RP06)
