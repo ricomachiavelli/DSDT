@@ -17,7 +17,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
-	External (_SB.PCI0.PEG2, DeviceObj)
 	External (_SB.PCI0.RP05, DeviceObj)
 	External (_SB.PCI0.RP06, DeviceObj)
 	External (_SB.PCI0.RP08, DeviceObj)
@@ -34,11 +33,8 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00
 	External (_SB.PCI0.LPCB.RMSC, DeviceObj)
 	External (_SB.PCI0.LPCB.SIO1, DeviceObj)
 	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
-	External (_SB.PCI0.PEG2.MVL3, DeviceObj)
-	External (_SB.PCI0.PEG2.MVL4, DeviceObj)
 	External (_SB.PCI0.RP05.MVL1, DeviceObj)
 	External (_SB.PCI0.RP05.MVL2, DeviceObj)
-	External (_SB.PCI0.RP05.PXSX, DeviceObj)
 	External (_SB.PCI0.RP06.PXSX, DeviceObj)
 	External (_SB.PCI0.RP08.PXSX, DeviceObj)
 	External (_SB.PCI0.TPMX._STA, IntObj)
@@ -372,13 +368,6 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00
 			Scope (RMSC) { Name (_STA, Zero) }
 			/* Disabling the SIO1 device */
 			Scope (SIO1) { Name (_STA, Zero) }
-		}
-
-		Scope (PEG2)
-		{
-			/* Disabling the MVLx devices */
-			Scope (MVL3) { Name (_STA, Zero) }
-			Scope (MVL4) { Name (_STA, Zero) }
 		}
 
 		/* Disabling the SAT1 device */

@@ -116,14 +116,6 @@ DefinitionBlock ("SSDT-7-Series.aml", "SSDT", 1, "APPLE ", "General", 0x00000001
 			Return (^^EH01.AAPL)
 		}
 
-		Scope (RP08)
-		{
-			/* Disabling the PXSX device */
-			Scope (PXSX) { Name (_STA, Zero) }
-			/* Adding a new SATA device */
-			Device (SATA) { Name (_ADR, Zero) }
-		}
-
 		Scope (PEG0)
 		{
 			/* Adding device properties to GFX0 */
