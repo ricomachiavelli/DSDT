@@ -12,7 +12,7 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "General", 0x00000
 	External (_SB.LNKH._STA, IntObj)
 
 	External (_SB.PCI0.B0D4, DeviceObj)
-	External (_SB.PCI0.EHC1, DeviceObj)
+	External (_SB.PCI0.EH01, DeviceObj)
 	External (_SB.PCI0.GLAN, DeviceObj)
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
@@ -94,8 +94,8 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "General", 0x00000
 			}
 		}
 
-		/* Adding device properties to EHC1 */
-		Scope (EHC1)
+		/* Adding device properties to EH01 */
+		Scope (EH01)
 		{
 			Name (AAPL, Package()
 			{
@@ -114,11 +114,11 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "General", 0x00000
 			}
 		}
 
-		/* Adding device properties to EHC2 */
-		Method (EHC2._DSM, 4)
+		/* Adding device properties to EH02 */
+		Method (EH02._DSM, 4)
 		{
 			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (^^EHC1.AAPL)
+			Return (^^EH01.AAPL)
 		}
 
 		/* Disabling the GLAN device */
@@ -349,11 +349,11 @@ DefinitionBlock ("SSDT-GA-B75M-D3H.aml", "SSDT", 1, "APPLE ", "General", 0x00000
 		/* Disabling the WMI1 device */
 		Scope (WMI1) { Name (_STA, Zero) }
 
-		/* Adding device properties to XHC1 */
-		Method (XHC1._DSM, 4)
+		/* Adding device properties to XH01 */
+		Method (XH01._DSM, 4)
 		{
 			If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
-			Return (^^EHC1.AAPL)
+			Return (^^EH01.AAPL)
 		}
 	}
 
