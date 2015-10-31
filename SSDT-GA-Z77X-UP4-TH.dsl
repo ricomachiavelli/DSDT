@@ -1,6 +1,7 @@
-DefinitionBlock ("SSDT-7-Series.aml", "SSDT", 1, "APPLE ", "General", 0x00000001)
+DefinitionBlock ("SSDT-GA-Z77X-UP4-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00000001)
 {
 	External (_SB.PCI0, DeviceObj)
+	External (_SB.PWRB, DeviceObj)
 
 	External (_SB.LNKA._STA, IntObj)
 	External (_SB.LNKB._STA, IntObj)
@@ -16,6 +17,8 @@ DefinitionBlock ("SSDT-7-Series.aml", "SSDT", 1, "APPLE ", "General", 0x00000001
 	External (_SB.PCI0.IGPU, DeviceObj)
 	External (_SB.PCI0.LPCB, DeviceObj)
 	External (_SB.PCI0.PEG0, DeviceObj)
+	External (_SB.PCI0.RP05, DeviceObj)
+	External (_SB.PCI0.RP07, DeviceObj)
 	External (_SB.PCI0.SAT1, DeviceObj)
 	External (_SB.PCI0.USB1, DeviceObj)
 	External (_SB.PCI0.USB2, DeviceObj)
@@ -28,6 +31,8 @@ DefinitionBlock ("SSDT-7-Series.aml", "SSDT", 1, "APPLE ", "General", 0x00000001
 
 	External (_SB.PCI0.LPCB.RMSC, DeviceObj)
 	External (_SB.PCI0.PEG0.GFX0, DeviceObj)
+	External (_SB.PCI0.RP05.PXSX, DeviceObj)
+	External (_SB.PCI0.RP07.PXSX, DeviceObj)
 	External (_SB.PCI0.TPMX._STA, IntObj)
 
 	External (_SB.PCI0.LPCB.CWDT._STA, IntObj)
@@ -116,6 +121,43 @@ DefinitionBlock ("SSDT-7-Series.aml", "SSDT", 1, "APPLE ", "General", 0x00000001
 			Return (^^EHC1.AAPL)
 		}
 
+		/* Disabling the GLAN device */
+		Scope (GLAN) { Name (_STA, Zero) }
+
+		Scope (RP05)
+		{
+			/* Disabling the PXSX device */
+			Scope (PXSX) { Name (_STA, Zero) }
+			/* Adding a new XHC2 device (USB 3.0) */
+			Device (XHC2)
+			{
+				Name (_ADR, Zero)
+				Method (_DSM, 4)
+				{
+					If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
+					/* Injecting device properties for VIA VL800 USB 3.0 */
+					Return (^^^EHC1.AAPL)
+				}
+			}
+		}
+
+		Scope (RP07)
+		{
+			/* Disabling the PXSX device */
+			Scope (PXSX) { Name (_STA, Zero) }
+			/* Adding a new ETH0 device */
+			Device (GIGE)
+			{
+				Name (_ADR, Zero)
+				Method (_DSM, 4)
+				{
+					If (Arg2 == Zero) { Return (Buffer() { 0x03 }) }
+					/* Injecting device properties for Realtek RTL8168E-VL/8111E-VL Gigabit Ethernet */
+					Return (Package() { "device_type", Buffer() { "Ethernet Controller" } })
+				}
+			}
+		}
+
 		Scope (PEG0)
 		{
 			/* Adding device properties to GFX0 */
@@ -187,9 +229,9 @@ DefinitionBlock ("SSDT-7-Series.aml", "SSDT", 1, "APPLE ", "General", 0x00000001
 			}
 			Else
 			{
-				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will use layout ID 3 instead */
-				/* Injecting device properties for layout ID 3 */
-				Return (Package() { "layout-id", Unicode("\x03") })
+				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will use layout ID 1 instead */
+				/* Injecting device properties for layout ID 1 */
+				Return (Package() { "layout-id", Unicode("\x01") })
 			}
 		}
 
