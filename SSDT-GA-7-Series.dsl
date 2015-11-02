@@ -41,10 +41,22 @@ DefinitionBlock ("SSDT-7-Series.aml", "SSDT", 1, "APPLE ", "General", 0x00000001
 	External (_TZ.TZ01, PkgObj)
 
 	/* Calls to _OSI in DSDT are routed to here */
-	Method(XOSI, 1, Serialized)
+	Method (XOSI, 1, Serialized)
 	{
 		/* Simulates Windows 2012 (Windows 8) */
-		Return (Arg0 == "Windows 2012")
+		Name(WINV, Package()
+		{
+			"Windows",			// Generic Windows query
+			"Windows 2001",		// Windows XP
+			"Windows 2001 SP2",	// Windows XP SP2
+			"Windows 2006",		// Windows Vista
+			"Windows 2006 SP1",	// Windows Vista SP1
+			"Windows 2009",		// Windows 7/Windows Server 2008 R2
+			"Windows 2012",		// Windows 8/Windows Server 2012
+		})
+
+		/* _OSI must return true for all previous versions of Windows */
+		Return (Match (WINV, MEQ, Arg0, MTR, Zero, Zero) != Ones)
 	}
 
 	Method (\_SB._INI)
