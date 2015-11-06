@@ -239,6 +239,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD3H.aml", "SSDT", 1, "APPLE ", "General", 0x0000
 						/* Injecting generic device properties for discrete graphics with HDMI audio */
 						Return (Package()
 						{
+							"AAPL,slot-name", Buffer() { "Slot-1" },
 							"device_type", Buffer() { "Audio Controller" },
 							"hda-gfx", Buffer() { "onboard-1" }
 						})
@@ -256,7 +257,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD3H.aml", "SSDT", 1, "APPLE ", "General", 0x0000
 			/* We first need to check if the vendor ID of GFX0 is 0x8086 before injecting the device properties */
 			If (^^PEG0.GFX0.VID0 == 0x8086)
 			{
-				/* Since only an IGPU is present, the layout ID needs to be set to 3 for HDMI audio to work properly */
+				/* Since only an IGPU is present, the layout ID needs to be set to 5 for HDMI audio to work properly */
 				/* Injecting device properties for layout ID 5 & Intel HDMI audio */
 				Return (Package ()
 				{
@@ -266,7 +267,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UD3H.aml", "SSDT", 1, "APPLE ", "General", 0x0000
 			}
 			Else
 			{
-				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will use layout ID 1 instead */
+				/* If the vendor ID of GFX0 isn't 0x8086, we can assume a discrete GPU is present, so we will only inject layout ID 5 instead */
 				/* Injecting device properties for layout ID 5 */
 				Return (Package() { "layout-id", Unicode("\x05") })
 			}

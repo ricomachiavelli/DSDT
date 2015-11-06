@@ -239,6 +239,7 @@ DefinitionBlock ("SSDT-GA-Z77X-UP5-TH.aml", "SSDT", 1, "APPLE ", "General", 0x00
 						/* Injecting generic device properties for discrete graphics with HDMI audio */
 						Return (Package()
 						{
+							"AAPL,slot-name", Buffer() { "Slot-1" },
 							"device_type", Buffer() { "Audio Controller" },
 							"hda-gfx", Buffer() { "onboard-1" }
 						})
